@@ -24,6 +24,13 @@ def main():
     with open('poem.txt', 'r'):
         plot_text = r.readlines()
 
+    # The interval
+    hours = 8
+    interval = hours * 3600
+    parts = 24 / hours
+    current_part = 0
+    current_day = -1
+
     # The regex sentence matching and extracting pattern
     pattern = r'^\s*([A-Za-z0-9,;\'\"\s]{1,128}[.?!])\s*$'
     prog = re.compile(pattern)
@@ -33,8 +40,19 @@ def main():
 
     # Start posting submissions and pinning them
     while True:
+        day = date.today().timetuple()[2]
+        month = date.today().timetuple()[1]
+        year = date.today().timetuple()[0]
+
+        # Calculate the part
+        if current_day == day:
+            current_part += 1
+        else:
+            current_day = day
+            current_part = 1
+
         # Post the submission
-        post = sub.submit(f'Sentence for {date.today().timetuple()[1]}/{date.today().timetuple()[2]}/{date.today().timetuple()[0]}!',
+        post = sub.submit(f'Sentence for {month}/{day}/{year}: Part {current_part} of {parts}',
                           selftext='The current plot:\n' + plot_text,
                           flair_text='TBD')
 
@@ -44,7 +62,7 @@ def main():
         post.mod.sticky()
 
         # Wait for 24 hours
-        time.sleep(24 * 60 * 60)
+        time.sleep(interval)
 
         # Start parsing the top top-level only comments
         post.comments.comment_sort = 'top'
