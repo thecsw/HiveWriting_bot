@@ -25,9 +25,9 @@ def main():
         plot_text = r.read()
 
     # The interval
-    hours = 8
-    interval = 60
-    parts = 24 * 3600 * 3600 // interval
+    hours = 24
+    interval = hours * 3600
+    parts = 24 // hours
     current_part = 0
     current_day = -1
 
@@ -52,7 +52,8 @@ def main():
             current_part = 1
 
         # Post the submission
-        title = f'Sentence for {month}/{day}/{year}: Part {current_part} of {parts}'
+        #title = f'Sentence for {month}/{day}/{year}: Part {current_part} of {parts}'
+        title = f'Sentence for {month}/{day}/{year}'
         post = sub.submit(title,
                           selftext='The current plot:\n\n' + plot_text)
         print(f"Posted a submission:\n{title}\nWaiting...\n")
