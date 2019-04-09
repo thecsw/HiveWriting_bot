@@ -21,22 +21,22 @@ def main():
 
     # Fill the initial poem text
     plot_text = ""
-    with open('poem.txt', 'r'):
-        plot_text = r.readlines()
+    with open('poem.txt', 'r') as r:
+        plot_text = r.read()
 
     # The interval
     hours = 8
-    interval = hours * 3600
-    parts = 24 / hours
+    interval = 60
+    parts = 24 * 3600 * 3600 // interval
     current_part = 0
     current_day = -1
 
     # The regex sentence matching and extracting pattern
-    pattern = r'^\s*([A-Za-z0-9,;\'\"\s]{1,128}[.?!])\s*$'
+    pattern = r'^\s*([A-Za-z0-9,;*_\'\"\s]{1,128}[.?!]?)\s*$'
     prog = re.compile(pattern)
-
+    
     # Specify the subreddit where to post
-    sub = reddit.subreddit('HiveWriting')
+    sub = reddit.subreddit('memeinvestor_test')
 
     # Start posting submissions and pinning them
     while True:
@@ -52,33 +52,46 @@ def main():
             current_part = 1
 
         # Post the submission
-        post = sub.submit(f'Sentence for {month}/{day}/{year}: Part {current_part} of {parts}',
-                          selftext='The current plot:\n' + plot_text,
-                          flair_text='TBD')
+        title = f'Sentence for {month}/{day}/{year}: Part {current_part} of {parts}'
+        post = sub.submit(title,
+                          selftext='The current plot:\n\n' + plot_text)
+        print(f"Posted a submission:\n{title}\nWaiting...\n")
 
         # Sticky the post to the subreddit
-        post.mod.approve()
+        #post.mod.approve()
         post.mod.distinguish()
         post.mod.sticky()
 
         # Wait for 24 hours
         time.sleep(interval)
-
+        print("Done waiting")
         # Start parsing the top top-level only comments
         post.comments.comment_sort = 'top'
         post.comments.replace_more(limit=0)
         found = False
         for comment in post.comments:
+            # Check if we need to add NEWLINE
+            if re.match(r'^\s*NEWLINE[.?!]?\s*$', comment.body) is not None:
+                plot_text += "\n\n"
+                found = True
+                comment.mod.approve()
+                break
+            # Check if the sentence is passing
             reg_m = prog.match(comment.body)
             if reg_m is not None:
                 plot_text += reg_m.group(0)
+                if re.match(r'[.?!]$', plot_text) is None:
+                    plot_text += '.'
+                plot_text += ' '
                 found = True
+                comment.mod.approve()
                 break
 
         # What if no good sentence found?
         if not found:
             post.mod.flair(text='SENTENCE NOT FOUND')
         else:
+            print('SENTENCE FOUND:\n' + plot_text)
             post.mod.flair(text='SENTENCE FOUND')
 
         # Unsticky the post
