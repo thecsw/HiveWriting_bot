@@ -1,3 +1,12 @@
+# ignore my emacs backup files
+.saves
+
+# ignore the real config file
+config.py
+
+# ignore all txt files
+*.txt
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

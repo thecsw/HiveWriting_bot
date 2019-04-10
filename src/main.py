@@ -27,14 +27,14 @@ def main():
     # The interval
     hours = 24
     interval = hours * 3600
-    parts = 24 // hours
+    # parts = 24 // hours
     current_part = 0
     current_day = -1
 
     # The regex sentence matching and extracting pattern
     pattern = r'^\s*([A-Za-z0-9,;*_\'\"\s]{1,128}[.?!]?)\s*$'
     prog = re.compile(pattern)
-    
+
     # Specify the subreddit where to post
     sub = reddit.subreddit('memeinvestor_test')
 
@@ -81,7 +81,8 @@ def main():
             reg_m = prog.match(comment.body)
             if reg_m is not None:
                 plot_text += reg_m.group(0)
-                if re.match(r'[.?!]$', plot_text) is None:
+                # If no .?! is found at the end, append a dot by default
+                if re.match(r'.+[.?!]$', comment.body) is None:
                     plot_text += '.'
                 plot_text += ' '
                 found = True
