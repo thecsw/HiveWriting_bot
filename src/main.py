@@ -36,7 +36,7 @@ def main():
     prog = re.compile(pattern)
 
     # Specify the subreddit where to post
-    sub = reddit.subreddit('memeinvestor_test')
+    sub = reddit.subreddit('hivewriting')
 
     # Start posting submissions and pinning them
     while True:
