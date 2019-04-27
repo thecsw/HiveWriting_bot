@@ -32,7 +32,7 @@ def main():
     current_day = -1
 
     # The regex sentence matching and extracting pattern
-    pattern = r'^\s*([-A-Za-z0-9,;*_\'\"\s]{1,256}[.?!]?)\s*$'
+    pattern = r'^\s*([-A-Za-z0-9.,;*_\'\"\s\n]{1,256}[.?!]?)\s*$'
     prog = re.compile(pattern)
 
     # Specify the subreddit where to post
@@ -71,12 +71,6 @@ def main():
         post.comments.replace_more(limit=0)
         found = False
         for comment in post.comments:
-            # Check if we need to add NEWLINE
-            if re.match(r'^\s*NEWLINE[.?!]?\s*$', comment.body) is not None:
-                plot_text += "\n\n"
-                found = True
-                comment.mod.approve()
-                break
             # Check if the sentence is passing
             reg_m = prog.match(comment.body)
             if reg_m is not None:
@@ -87,6 +81,7 @@ def main():
                 plot_text += ' '
                 found = True
                 comment.mod.approve()
+                comment.reply('Congrats! Your sentence was chosen! Come check out the new post to continue your story!')
                 break
 
         # What if no good sentence found?
@@ -98,6 +93,8 @@ def main():
 
         # Unsticky the post
         post.mod.sticky(state=False)
+        # Lock the post
+        post.mod.lock()
 
         # Write the text to the file just in case
         with open('poem.txt', 'w') as w:
