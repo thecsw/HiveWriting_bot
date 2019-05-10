@@ -32,7 +32,7 @@ def main():
     current_day = -1
 
     # The regex sentence matching and extracting pattern
-    pattern = r'^\s*([-A-Za-z0-9.,;*_\'\"\s\n]{1,256}[.?!]?)\s*$'
+    pattern = r'^\s*([-A-Za-z0-9.,;!?@#$%^&*_(){}+~\'\"\s\n]{1,256}[.?!]?)\s*$'
     prog = re.compile(pattern)
 
     # Specify the subreddit where to post
